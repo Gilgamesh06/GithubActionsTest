@@ -14,3 +14,12 @@
 - Testcontainers
 - Django    
 - pytest
+
+## Instalacion
+- Clonar el repositorio
+
+    ```bash
+    git clone https://github.com/your-username/your-repo.git
+    ```
+    
+
