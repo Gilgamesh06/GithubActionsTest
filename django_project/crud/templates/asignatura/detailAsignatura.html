@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Buscar Asignatura{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>🔍 Buscar Asignatura por ID</h2>
+    </div>
+
+    <div class="search-box">
+        <input type="number" id="asignaturaId" class="form-control" placeholder="Ingrese el ID de la asignatura"
+            min="1">
+        <button onclick="buscarAsignatura()" class="btn btn-primary">🔍 Buscar</button>
+    </div>
+
+    <div id="result"></div>
+
+    <div class="mt-3">
+        <a href="{% url 'crud:menu' %}" class="btn btn-secondary">↩️ Volver al Menú</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'crud/js/apiService.js' %}"></script>
+<script>
+    async function buscarAsignatura() {
+        const id = document.getElementById('asignaturaId').value;
+        const resultDiv = document.getElementById('result');
+
+        if (!id) {
+            resultDiv.innerHTML = '<p class="alert alert-warning">⚠️ Por favor ingrese un ID</p>';
+            return;
+        }
+
+        resultDiv.innerHTML = '<p class="loading">⏳ Buscando...</p>';
+
+        try {
+            const asignatura = await getById('asignaturas', id);
+
+            resultDiv.innerHTML = `
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h3>✅ Asignatura Encontrada</h3>
+                    </div>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>ID</label>
+                            <p>${asignatura.ID_ASIGNATURA}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Nombre</label>
+                            <p>${asignatura.NOMBRE}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Créditos</label>
+                            <p>${asignatura.CREDITOS}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } catch (error) {
+            resultDiv.innerHTML = '<p class="alert alert-error">❌ Asignatura no encontrada</p>';
+        }
+    }
+
+    document.getElementById('asignaturaId').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') buscarAsignatura();
+    });
+</script>
+{% endblock %}

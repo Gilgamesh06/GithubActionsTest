@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Buscar Profesor{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>🔍 Buscar Profesor por ID</h2>
+    </div>
+
+    <div class="search-box">
+        <input type="number" id="profesorId" class="form-control" placeholder="Ingrese el ID del profesor" min="1">
+        <button onclick="buscarProfesor()" class="btn btn-primary">🔍 Buscar</button>
+    </div>
+
+    <div id="result"></div>
+
+    <div class="mt-3">
+        <a href="{% url 'crud:menu' %}" class="btn btn-secondary">↩️ Volver al Menú</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'crud/js/apiService.js' %}"></script>
+<script>
+    async function buscarProfesor() {
+        const id = document.getElementById('profesorId').value;
+        const resultDiv = document.getElementById('result');
+
+        if (!id) {
+            resultDiv.innerHTML = '<p class="alert alert-warning">⚠️ Por favor ingrese un ID</p>';
+            return;
+        }
+
+        resultDiv.innerHTML = '<p class="loading">⏳ Buscando...</p>';
+
+        try {
+            const profesor = await getById('profesores', id);
+
+            resultDiv.innerHTML = `
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h3>✅ Profesor Encontrado</h3>
+                    </div>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>ID</label>
+                            <p>${profesor.ID_PROFESOR}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Nombre</label>
+                            <p>${profesor.NOMBRE}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Apellido</label>
+                            <p>${profesor.APELLIDO}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Edad</label>
+                            <p>${profesor.EDAD} años</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Género</label>
+                            <p>${profesor.GENERO === 'M' ? 'Masculino' : profesor.GENERO === 'F' ? 'Femenino' : 'Otro'}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } catch (error) {
+            resultDiv.innerHTML = '<p class="alert alert-error">❌ Profesor no encontrado</p>';
+        }
+    }
+
+    // Permitir buscar con Enter
+    document.getElementById('profesorId').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') buscarProfesor();
+    });
+</script>
+{% endblock %}

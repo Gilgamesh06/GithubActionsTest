@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Menú Principal - Sistema Educativo{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header text-center">
+        <h2>🏫 Bienvenido al Sistema de Gestión Educativa</h2>
+        <p style="color: #6b7280; margin-top: 0.5rem;">Selecciona una opción para comenzar</p>
+    </div>
+
+    <div class="menu-grid">
+        <a href="{% url 'crud:estudiante_form' %}" class="menu-card"
+            style="background: linear-gradient(135deg, #2563eb, #1e40af);">
+            <h3>👨‍🎓 Estudiantes</h3>
+            <p>Gestionar información de estudiantes</p>
+        </a>
+
+        <a href="{% url 'crud:profesor_form' %}" class="menu-card"
+            style="background: linear-gradient(135deg, #10b981, #059669);">
+            <h3>👨‍🏫 Profesores</h3>
+            <p>Administrar datos de profesores</p>
+        </a>
+
+        <a href="{% url 'crud:asignatura_form' %}" class="menu-card"
+            style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+            <h3>📖 Asignaturas</h3>
+            <p>Gestionar asignaturas académicas</p>
+        </a>
+
+        <a href="{% url 'crud:curso_form' %}" class="menu-card"
+            style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+            <h3>🎓 Cursos</h3>
+            <p>Administrar cursos disponibles</p>
+        </a>
+
+        <a href="{% url 'crud:matricula_form' %}" class="menu-card"
+            style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+            <h3>📝 Matrículas</h3>
+            <p>Gestionar matrículas de estudiantes</p>
+        </a>
+    </div>
+</div>
+{% endblock %}

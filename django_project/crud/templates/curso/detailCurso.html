@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Buscar Curso{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>🔍 Buscar Curso por ID</h2>
+    </div>
+
+    <div class="search-box">
+        <input type="number" id="cursoId" class="form-control" placeholder="Ingrese el ID del curso" min="1">
+        <button onclick="buscarCurso()" class="btn btn-primary">🔍 Buscar</button>
+    </div>
+
+    <div id="result"></div>
+
+    <div class="mt-3">
+        <a href="{% url 'crud:menu' %}" class="btn btn-secondary">↩️ Volver al Menú</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'crud/js/apiService.js' %}"></script>
+<script>
+    async function buscarCurso() {
+        const id = document.getElementById('cursoId').value;
+        const resultDiv = document.getElementById('result');
+
+        if (!id) {
+            resultDiv.innerHTML = '<p class="alert alert-warning">⚠️ Por favor ingrese un ID</p>';
+            return;
+        }
+
+        resultDiv.innerHTML = '<p class="loading">⏳ Buscando...</p>';
+
+        try {
+            const curso = await getById('cursos', id);
+
+            resultDiv.innerHTML = `
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h3>✅ Curso Encontrado</h3>
+                    </div>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>ID</label>
+                            <p>${curso.ID_CURSO}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Nombre</label>
+                            <p>${curso.NOMBRE}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>ID Asignatura</label>
+                            <p>${curso.FID_ASIGNATURA}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>ID Profesor</label>
+                            <p>${curso.FID_PROFESOR}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } catch (error) {
+            resultDiv.innerHTML = '<p class="alert alert-error">❌ Curso no encontrado</p>';
+        }
+    }
+
+    document.getElementById('cursoId').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') buscarCurso();
+    });
+</script>
+{% endblock %}

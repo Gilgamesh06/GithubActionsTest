@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Gestión Educativa{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'crud/css/styles.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>📚 Sistema Educativo</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="{% url 'crud:menu' %}">🏠 Inicio</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn">👨‍🎓 Estudiantes</a>
+                    <div class="dropdown-content">
+                        <a href="{% url 'crud:estudiante_form' %}">Registrar</a>
+                        <a href="{% url 'crud:estudiante_list' %}">Listar Todos</a>
+                        <a href="{% url 'crud:estudiante_detail' %}">Buscar por ID</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn">👨‍🏫 Profesores</a>
+                    <div class="dropdown-content">
+                        <a href="{% url 'crud:profesor_form' %}">Registrar</a>
+                        <a href="{% url 'crud:profesor_list' %}">Listar Todos</a>
+                        <a href="{% url 'crud:profesor_detail' %}">Buscar por ID</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn">📖 Asignaturas</a>
+                    <div class="dropdown-content">
+                        <a href="{% url 'crud:asignatura_form' %}">Registrar</a>
+                        <a href="{% url 'crud:asignatura_list' %}">Listar Todos</a>
+                        <a href="{% url 'crud:asignatura_detail' %}">Buscar por ID</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn">🎓 Cursos</a>
+                    <div class="dropdown-content">
+                        <a href="{% url 'crud:curso_form' %}">Registrar</a>
+                        <a href="{% url 'crud:curso_list' %}">Listar Todos</a>
+                        <a href="{% url 'crud:curso_detail' %}">Buscar por ID</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn">📝 Matrículas</a>
+                    <div class="dropdown-content">
+                        <a href="{% url 'crud:matricula_form' %}">Registrar</a>
+                        <a href="{% url 'crud:matricula_list' %}">Listar Todos</a>
+                        <a href="{% url 'crud:matricula_detail' %}">Buscar por ID</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 Sistema de Gestión Educativa | Powered by Django + FastAPI</p>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

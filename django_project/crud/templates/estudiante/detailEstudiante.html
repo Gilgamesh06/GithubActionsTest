@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Buscar Estudiante{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>🔍 Buscar Estudiante por ID</h2>
+    </div>
+
+    <div class="search-box">
+        <input type="number" id="estudianteId" class="form-control" placeholder="Ingrese el ID del estudiante" min="1">
+        <button onclick="buscarEstudiante()" class="btn btn-primary">🔍 Buscar</button>
+    </div>
+
+    <div id="result"></div>
+
+    <div class="mt-3">
+        <a href="{% url 'crud:menu' %}" class="btn btn-secondary">↩️ Volver al Menú</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'crud/js/apiService.js' %}"></script>
+<script>
+    async function buscarEstudiante() {
+        const id = document.getElementById('estudianteId').value;
+        const resultDiv = document.getElementById('result');
+
+        if (!id) {
+            resultDiv.innerHTML = '<p class="alert alert-warning">⚠️ Por favor ingrese un ID</p>';
+            return;
+        }
+
+        resultDiv.innerHTML = '<p class="loading">⏳ Buscando...</p>';
+
+        try {
+            const estudiante = await getById('estudiantes', id);
+
+            resultDiv.innerHTML = `
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h3>✅ Estudiante Encontrado</h3>
+                    </div>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>ID</label>
+                            <p>${estudiante.ID_ESTUDIANTE}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Nombre</label>
+                            <p>${estudiante.NOMBRE}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Apellido</label>
+                            <p>${estudiante.APELLIDO}</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Edad</label>
+                            <p>${estudiante.EDAD} años</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Género</label>
+                            <p>${estudiante.GENERO === 'M' ? 'Masculino' : estudiante.GENERO === 'F' ? 'Femenino' : 'Otro'}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } catch (error) {
+            resultDiv.innerHTML = '<p class="alert alert-error">❌ Estudiante no encontrado</p>';
+        }
+    }
+
+    document.getElementById('estudianteId').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') buscarEstudiante();
+    });
+</script>
+{% endblock %}
