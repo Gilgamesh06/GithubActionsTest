@@ -8,3 +8,9 @@
 - Django    
 - pytest
 
+## Requisitos
+- Python 3.12
+- PostgreSQL
+- Testcontainers
+- Django    
+- pytest
