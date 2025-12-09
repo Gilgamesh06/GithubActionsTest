@@ -1,0 +1,84 @@
+-- Crear la tabla estudiantes
+CREATE TABLE "ESTUDIANTE"(
+    "ID_ESTUDIANTE" SERIAL PRIMARY KEY,
+    "NOMBRE" VARCHAR(200) NOT NULL,
+    "APELLIDO" VARCHAR(200) NOT NULL,
+    "EDAD" INT NOT NULL,
+    "GENERO" VARCHAR(200) NOT NULL
+    
+);
+
+-- Comentarios para la tabla estudiantes
+COMMENT ON COLUMN "ESTUDIANTE"."ID_ESTUDIANTE" IS 'Identificador único del estudiante';
+COMMENT ON COLUMN "ESTUDIANTE"."NOMBRE" IS 'Nombre del estudiante';
+COMMENT ON COLUMN "ESTUDIANTE"."APELLIDO" IS 'Apellido del estudiante';
+COMMENT ON COLUMN "ESTUDIANTE"."EDAD" IS 'Edad del estudiante';
+COMMENT ON COLUMN "ESTUDIANTE"."GENERO" IS 'Género del estudiante';
+
+
+-- Crear la tabla asignaturas
+CREATE TABLE "ASIGNATURA"(
+    "ID_ASIGNATURA" SERIAL PRIMARY KEY,
+    "NOMBRE" VARCHAR(200) NOT NULL,
+    "CREDITOS" INT NOT NULL
+    
+);
+
+-- Comentarios para la tabla asignaturas
+COMMENT ON COLUMN "ASIGNATURA"."ID_ASIGNATURA" IS 'Identificador único de la asignatura';
+COMMENT ON COLUMN "ASIGNATURA"."NOMBRE" IS 'Nombre de la asignatura';
+COMMENT ON COLUMN "ASIGNATURA"."CREDITOS" IS 'Creditos de la asignatura';
+
+
+-- Crear la tabla profesores
+CREATE TABLE "PROFESOR"(
+    "ID_PROFESOR" SERIAL PRIMARY KEY,
+    "NOMBRE" VARCHAR(200) NOT NULL,
+    "APELLIDO" VARCHAR(200) NOT NULL,
+    "EDAD" INT NOT NULL,
+    "GENERO" VARCHAR(200) NOT NULL
+    
+);
+
+-- Comentarios para la tabla profesores
+COMMENT ON COLUMN "PROFESOR"."ID_PROFESOR" IS 'Identificador único del profesor';
+COMMENT ON COLUMN "PROFESOR"."NOMBRE" IS 'Nombre del profesor';
+COMMENT ON COLUMN "PROFESOR"."APELLIDO" IS 'Apellido del profesor';
+COMMENT ON COLUMN "PROFESOR"."EDAD" IS 'Edad del profesor';
+COMMENT ON COLUMN "PROFESOR"."GENERO" IS 'Género del profesor';
+    
+-- Crear la tabla cursos
+CREATE TABLE "CURSO"(
+    "ID_CURSO" SERIAL PRIMARY KEY,
+    "NOMBRE" VARCHAR(200) NOT NULL,
+    "FID_ASIGNATURA" INT NOT NULL,
+    "FID_PROFESOR" INT NOT NULL,
+
+    CONSTRAINT "FK_CURSOS_ASIGNATURA" FOREIGN KEY ("FID_ASIGNATURA") REFERENCES "ASIGNATURA"("ID_ASIGNATURA"),
+    CONSTRAINT "FK_CURSOS_PROFESOR" FOREIGN KEY ("FID_PROFESOR") REFERENCES "PROFESOR"("ID_PROFESOR")
+    
+);
+
+-- Comentarios para la tabla cursos
+COMMENT ON COLUMN "CURSO"."ID_CURSO" IS 'Identificador único del curso';
+COMMENT ON COLUMN "CURSO"."NOMBRE" IS 'Nombre del curso';
+COMMENT ON COLUMN "CURSO"."FID_ASIGNATURA" IS 'Identificador de la asignatura';
+COMMENT ON COLUMN "CURSO"."FID_PROFESOR" IS 'Identificador del profesor';
+
+-- Crear la tabla matriculas
+CREATE TABLE "MATRICULA"(
+    "ID_MATRICULA" SERIAL PRIMARY KEY,
+    "FECHA" DATE NOT NULL,
+    "FID_ESTUDIANTE" INT NOT NULL,
+    "FID_CURSO" INT NOT NULL,
+
+    CONSTRAINT "FK_MATRICULA_ESTUDIANTE" FOREIGN KEY ("FID_ESTUDIANTE") REFERENCES "ESTUDIANTE"("ID_ESTUDIANTE"),
+    CONSTRAINT "FK_MATRICULA_CURSO" FOREIGN KEY ("FID_CURSO") REFERENCES "CURSO"("ID_CURSO")
+    
+);
+
+-- Comentarios para la tabla matriculas
+COMMENT ON COLUMN "MATRICULA"."ID_MATRICULA" IS 'Identificador único de la matricula';
+COMMENT ON COLUMN "MATRICULA"."FECHA" IS 'Fecha de la matricula';
+COMMENT ON COLUMN "MATRICULA"."FID_ESTUDIANTE" IS 'Identificador del estudiante';
+COMMENT ON COLUMN "MATRICULA"."FID_CURSO" IS 'Identificador del curso';
