@@ -28,7 +28,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: backend-env
-          path: fastapi_project
+          path: |
+            fastapi_project
+            Data_base
           include-hidden-files: true
 
   unit_tests:
@@ -39,7 +41,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: backend-env
-          path: fastapi_project
+          path: .
 
       - name: Run unit tests
         working-directory: fastapi_project
@@ -62,7 +64,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: backend-env
-          path: fastapi_project
+          path: .
 
       - name: Run integration tests
         working-directory: fastapi_project
