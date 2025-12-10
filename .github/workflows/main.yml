@@ -28,9 +28,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: backend-env
-          path: |
-            fastapi_project/venv
-            fastapi_project
+          path: fastapi_project
 
   unit_tests:
     runs-on: ubuntu-latest
@@ -40,7 +38,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: backend-env
-          path: .
+          path: fastapi_project
 
       - name: Run unit tests
         working-directory: fastapi_project
@@ -62,7 +60,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: backend-env
-          path: .
+          path: fastapi_project
 
       - name: Run integration tests
         working-directory: fastapi_project
@@ -102,7 +100,7 @@ jobs:
                -F document=@reports/report_integration.html \
                https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument
 
-  docker_build:
+  docker_build_and_publish:
     runs-on: ubuntu-latest
     needs: test_report
     steps:
@@ -113,30 +111,20 @@ jobs:
         id: vars
         run: echo "TAG=v1.${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
 
-      - name: Build Docker Image
-        run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/my-backend:${{ env.TAG }} fastapi_project
-          docker tag ${{ secrets.DOCKER_USERNAME }}/my-backend:${{ env.TAG }} ${{ secrets.DOCKER_USERNAME }}/my-backend:latest
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Upload docker tag as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: docker-tag
-          path: |
-            fastapi_project
-          retention-days: 1
-
-  docker_publish:
-    runs-on: ubuntu-latest
-    needs: docker_build
-    steps:
       - name: Log in to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Push Docker images
-        run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/my-backend:${{ env.TAG }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/my-backend:latest
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v5
+        with:
+          context: fastapi_project
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/my-backend:${{ env.TAG }}
+            ${{ secrets.DOCKER_USERNAME }}/my-backend:latest
