@@ -29,6 +29,7 @@ jobs:
         with:
           name: backend-env
           path: fastapi_project
+          include-hidden-files: true
 
   unit_tests:
     runs-on: ubuntu-latest
@@ -43,6 +44,7 @@ jobs:
       - name: Run unit tests
         working-directory: fastapi_project
         run: |
+          ls -la
           chmod +x .venv/bin/activate
           source .venv/bin/activate
           chmod +x .venv/bin/pytest
