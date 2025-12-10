@@ -98,7 +98,7 @@ jobs:
       - name: Send reports to Telegram
         run: |
           curl -F chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-               -F document=@reports/report-unit.html \
+               -F document=@reports/report_unit.html \
                https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument
 
           curl -F chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
