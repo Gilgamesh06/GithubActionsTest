@@ -46,7 +46,7 @@ jobs:
         run: |
           chmod +x -R .venv/bin
           source .venv/bin/activate
-          pytest tests/unit --html=report_unit.html
+          pytest tests/test_unit --html=report_unit.html
 
       - name: Upload unit test report
         uses: actions/upload-artifact@v4
@@ -69,7 +69,7 @@ jobs:
         run: |
           chmod +x -R .venv/bin
           source .venv/bin/activate
-          pytest tests/integration --html=report_integration.html
+          pytest tests/test_integration --html=report_integration.html
 
       - name: Upload integration test report
         uses: actions/upload-artifact@v4
