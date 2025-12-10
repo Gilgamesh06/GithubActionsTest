@@ -43,7 +43,9 @@ jobs:
       - name: Run unit tests
         working-directory: fastapi_project
         run: |
+          chmod +x venv/bin/activate
           source venv/bin/activate
+          chmod +x venv/bin/pytest
           pytest tests/unit --html=report_unit.html
 
       - name: Upload unit test report
@@ -65,7 +67,9 @@ jobs:
       - name: Run integration tests
         working-directory: fastapi_project
         run: |
+          chmod +x venv/bin/activate
           source venv/bin/activate
+          chmod +x venv/bin/pytest
           pytest tests/integration --html=report_integration.html
 
       - name: Upload integration test report
