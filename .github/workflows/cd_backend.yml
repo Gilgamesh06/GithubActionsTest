@@ -1,8 +1,10 @@
 name: CD - Deploy Backend to Azure VM
 
 on:
-  push:
-    branches: [main]
+  workflow_run:
+    workflows: ["CI Pipeline Backend"]
+    types:
+      - completed
 
 jobs:
 
