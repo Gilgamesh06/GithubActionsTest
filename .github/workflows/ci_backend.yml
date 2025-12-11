@@ -210,7 +210,7 @@ jobs:
   docker_publish:
     runs-on: ubuntu-latest
     needs: docker_build
-    if: always()  # Solo depende del resultado de docker_build, no de los tests
+    if: needs.docker_build.result == 'success'
 
     steps:
       - name: Download Docker image artifact
