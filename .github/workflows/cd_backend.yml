@@ -54,7 +54,7 @@ jobs:
             echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
             echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
             echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
-
+            echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> .env
             echo "Archivo .env actualizado en el servidor."
 
   deploy_app:
