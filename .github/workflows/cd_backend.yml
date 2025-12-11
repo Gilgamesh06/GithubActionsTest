@@ -71,6 +71,14 @@ jobs:
           script: |
             cd /home/azureuser/myapp
 
-            echo "Haciendo pull de la nueva imagen..."
-            docker compose up --build
+            echo "=== Iniciando deployment ==="
+            echo "Construyendo e iniciando contenedores..."
+            docker compose up -d --build
+            
+            echo ""
+            echo "=== Status de contenedores ==="
+            docker compose ps
+            
+            echo ""
+            echo "✅ Deployment completado"
 
