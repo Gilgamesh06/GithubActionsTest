@@ -31,6 +31,7 @@ jobs:
           path: |
             fastapi_project
             Data_base
+            Container
           include-hidden-files: true
 
   unit_tests:
@@ -128,7 +129,8 @@ jobs:
       - name: Build and push Docker images
         uses: docker/build-push-action@v5
         with:
-          context: fastapi_project
+          context: .
+          file: ./Container/Backend/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/my-backend:${{ env.TAG }}
