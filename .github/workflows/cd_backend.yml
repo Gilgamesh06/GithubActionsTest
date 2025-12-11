@@ -15,19 +15,31 @@ jobs:
     steps:
       - name: Validate secrets
         run: |
+          echo "Checking secrets..."
           if [ -z "${{ secrets.SSH_HOST }}" ]; then
-            echo "❌ Error: SSH_HOST secret is not configured"
+            echo "❌ SSH_HOST is empty"
             exit 1
+          else
+            echo "✅ SSH_HOST is set"
           fi
+          
           if [ -z "${{ secrets.SSH_USER }}" ]; then
-            echo "❌ Error: SSH_USER secret is not configured"
+            echo "❌ SSH_USER is empty"
             exit 1
+          else
+            echo "✅ SSH_USER is set"
           fi
+          
           if [ -z "${{ secrets.SSH_KEY }}" ]; then
-            echo "❌ Error: SSH_KEY secret is not configured"
+            echo "❌ SSH_KEY is empty"
             exit 1
+          else
+            echo "✅ SSH_KEY is set (length: $(echo -n '${{ secrets.SSH_KEY }}' | wc -c) chars)"
           fi
-          echo "✅ All required secrets are configured"
+          
+          echo ""
+          echo "Host value: ${{ secrets.SSH_HOST }}"
+          echo "User value: ${{ secrets.SSH_USER }}"
 
       - name: Create .env on Azure VM
         uses: appleboy/ssh-action@v1.2.0
