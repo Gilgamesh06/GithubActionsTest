@@ -72,10 +72,5 @@ jobs:
             cd /home/azureuser/myapp
 
             echo "Haciendo pull de la nueva imagen..."
-            docker compose pull
+            docker compose up --build
 
-            echo "Recreando contenedores..."
-            docker compose up -d --remove-orphans
-
-            echo "Contenedores actualizados:"
-            docker ps -a
