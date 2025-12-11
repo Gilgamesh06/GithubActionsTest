@@ -8,7 +8,26 @@ on:
 
 jobs:
 
+  extract_tag:
+    runs-on: ubuntu-latest
+    outputs:
+      docker_tag: ${{ steps.get_tag.outputs.tag }}
+    
+    steps:
+      - name: Extract Docker tag from CI workflow
+        id: get_tag
+        run: |
+          # Obtener el número de ejecución del CI que disparó este CD
+          # El run_number del CI es igual al GITHUB_RUN_NUMBER que usó para generar el tag
+          CI_RUN_NUMBER=${{ github.event.workflow_run.run_number }}
+          DOCKER_TAG="v1.${CI_RUN_NUMBER}"
+          
+          echo "tag=${DOCKER_TAG}" >> $GITHUB_OUTPUT
+          echo "✅ Docker tag extracted: ${DOCKER_TAG}"
+          echo "CI Run Number: ${CI_RUN_NUMBER}"
+
   create_env_file:
+    needs: extract_tag
     if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
 
@@ -55,10 +74,13 @@ jobs:
             echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
             echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
             echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> .env
-            echo "Archivo .env actualizado en el servidor."
+            echo "DOCKER_IMAGE_TAG=${{ needs.extract_tag.outputs.docker_tag }}" >> .env
+            echo ""
+            echo "Archivo .env actualizado:"
+            cat .env
 
   deploy_app:
-    needs: create_env_file  
+    needs: [create_env_file, extract_tag]  
     runs-on: ubuntu-latest
 
     steps:
@@ -72,6 +94,7 @@ jobs:
             cd /home/azureuser/myapp
 
             echo "=== Iniciando deployment ==="
+            echo "Docker tag: ${{ needs.extract_tag.outputs.docker_tag }}"
             echo "Construyendo e iniciando contenedores..."
             docker compose up -d --build
             
@@ -82,3 +105,28 @@ jobs:
             echo ""
             echo "✅ Deployment completado"
 
+  update_latest_tag:
+    needs: deploy_app
+    runs-on: ubuntu-latest
+    if: success()
+
+    steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Update latest tag
+        run: |
+          # Obtener el tag de la última ejecución del CI
+          TAG=$(curl -s https://api.github.com/repos/${{ github.repository }}/actions/workflows/ci_backend.yml/runs?per_page=1 | jq -r '.workflow_runs[0].name' | grep -oP 'v\d+\.\d+' || echo "unknown")
+          
+          DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
+          
+          # Tirar de la imagen específica y retaguearla como latest
+          docker pull $DOCKER_USERNAME/my-backend:$TAG
+          docker tag $DOCKER_USERNAME/my-backend:$TAG $DOCKER_USERNAME/my-backend:latest
+          docker push $DOCKER_USERNAME/my-backend:latest
+          
+          echo "✅ Tag 'latest' actualizado a: $TAG"

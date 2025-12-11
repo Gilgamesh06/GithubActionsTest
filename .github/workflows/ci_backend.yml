@@ -211,6 +211,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: docker_build
     if: needs.docker_build.result == 'success'
+    outputs:
+      docker_tag: ${{ needs.docker_build.outputs.docker_tag }}
 
     steps:
       - name: Download Docker image artifact
@@ -237,5 +239,5 @@ jobs:
           docker tag my-backend:$TAG $DOCKER_USERNAME/my-backend:$TAG
           docker push $DOCKER_USERNAME/my-backend:$TAG
           
-          docker tag my-backend:$TAG $DOCKER_USERNAME/my-backend:latest
-          docker push $DOCKER_USERNAME/my-backend:latest
+          echo "✅ Image pushed: $DOCKER_USERNAME/my-backend:$TAG"
+          echo "ℹ️ Tag 'latest' will be updated by CD workflow after successful deployment"
