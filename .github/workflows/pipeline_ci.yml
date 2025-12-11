@@ -185,7 +185,7 @@ jobs:
           restore-keys: |
             buildx-${{ runner.os }}-
 
-      - name: Build Docker image (without pushing)
+      - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -193,9 +193,19 @@ jobs:
           load: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          tags: |
+          tags: my-backend:${{ steps.export_tag.outputs.docker_tag }}
 
-            my-backend:${{ env.TAG }}
+      - name: Save Docker image as artifact
+        run: |
+          mkdir -p /tmp/docker-image
+          docker save my-backend:${{ steps.export_tag.outputs.docker_tag }} -o /tmp/docker-image/backend-image.tar
+
+      - name: Upload Docker image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp/docker-image/backend-image.tar
+          retention-days: 1
 
   docker_publish:
     runs-on: ubuntu-latest
@@ -203,21 +213,31 @@ jobs:
     if: always()  # Solo depende del resultado de docker_build, no de los tests
 
     steps:
+      - name: Download Docker image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+          path: /tmp/docker-image
+
+      - name: Load Docker image
+        run: |
+          docker load -i /tmp/docker-image/backend-image.tar
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Push Docker images
         run: |
           TAG=${{ needs.docker_build.outputs.docker_tag }}
+          DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
 
-          docker push ${{ secrets.DOCKER_USERNAME }}/my-backend:$TAG
-          docker tag my-backend:$TAG ${{ secrets.DOCKER_USERNAME }}/my-backend:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/my-backend:latest
+          docker tag my-backend:$TAG $DOCKER_USERNAME/my-backend:$TAG
+          docker push $DOCKER_USERNAME/my-backend:$TAG
+          
+          docker tag my-backend:$TAG $DOCKER_USERNAME/my-backend:latest
+          docker push $DOCKER_USERNAME/my-backend:latest
 
   
