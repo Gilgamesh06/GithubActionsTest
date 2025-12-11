@@ -21,4 +21,5 @@
     ```bash
     git clone https://github.com/Gilgamesh06/GithubActionsTest.git
     cd GithubActionsTest
+    ls -la
     ```    
