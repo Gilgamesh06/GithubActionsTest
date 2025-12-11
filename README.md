@@ -19,7 +19,7 @@
 - Clonar el repositorio
 
     ```bash
-    git clone https://github.com/your-username/your-repo.git
-    ```
-    
+    git clone https://github.com/Gilgamesh06/GithubActionsTest.git
+    ```    
+
 
