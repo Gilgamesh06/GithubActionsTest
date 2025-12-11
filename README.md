@@ -21,6 +21,3 @@
     ```bash
     git clone https://github.com/Gilgamesh06/GithubActionsTest.git
     ```    
-
-
-Esto es una prueba haber si si se dispara el CD
