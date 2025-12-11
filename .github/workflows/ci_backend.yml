@@ -240,4 +240,34 @@ jobs:
           docker tag my-backend:$TAG $DOCKER_USERNAME/my-backend:latest
           docker push $DOCKER_USERNAME/my-backend:latest
 
-  
+  workflow_status:
+    runs-on: ubuntu-latest
+    needs: [unit_tests, integration_tests, test_report, docker_build, docker_publish]
+    if: always()
+    
+    steps:
+      - name: Check workflow status
+        run: |
+          # Verificar si los tests críticos pasaron
+          UNIT_RESULT="${{ needs.unit_tests.result }}"
+          INT_RESULT="${{ needs.integration_tests.result }}"
+          DOCKER_RESULT="${{ needs.docker_build.result }}"
+          
+          echo "Unit tests: $UNIT_RESULT"
+          echo "Integration tests: $INT_RESULT"
+          echo "Docker build: $DOCKER_RESULT"
+          
+          # Fallar si los tests unitarios fallaron
+          if [ "$UNIT_RESULT" = "failure" ]; then
+            echo "❌ Unit tests failed"
+            exit 1
+          fi
+          
+          # Fallar si los tests de integración fallaron (y no fueron skipped)
+          if [ "$INT_RESULT" = "failure" ]; then
+            echo "❌ Integration tests failed"
+            exit 1
+          fi
+          
+          echo "✅ Workflow completed successfully"
+          exit 0
