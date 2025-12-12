@@ -159,7 +159,7 @@ class TestEstudianteService:
         
         # Assert
         assert result.NOMBRE == "Carlos"
-        assert result.APELLIDO == "Lopez"
+        assert result.APELLIDO == "López"
         mock_conn.commit.assert_called_once()
     
     @patch('service.estudiante.DatabaseConnection')
