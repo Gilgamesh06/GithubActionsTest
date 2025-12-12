@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException, status
 from service.estudiante import EstudianteDB
 from typing import List
 import psycopg2
+import traceback
 
 router = APIRouter()
 
@@ -25,9 +26,12 @@ async def insert_estudiante(estudiante: EstudianteRegister):
             detail="Error de base de datos al registrar estudiante"
         )
     except Exception as e:
+        # Captura la traza de error
+        error_trace = traceback.format_exc()
+        # Lanza la excepción HTTP con la traza
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
-            detail="Error inesperado al registrar estudiante"
+            detail=f"Error inesperado al registrar estudiante: {str(e)}\nTraza de error: {error_trace}"
         )
 
 """
