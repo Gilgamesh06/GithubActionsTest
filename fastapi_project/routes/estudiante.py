@@ -21,9 +21,11 @@ async def insert_estudiante(estudiante: EstudianteRegister):
             detail="Error de integridad: El estudiante ya existe o viola restricciones de la base de datos"
         )
     except psycopg2.Error as e:
+        # Captura la traza de error
+        error_trace = traceback.format_exc()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
-            detail="Error de base de datos al registrar estudiante"
+            detail=f"Error de base de datos al registrar estudiante {str(e)}\nTraza de error: {error_trace}"
         )
     except Exception as e:
         # Captura la traza de error
