@@ -160,9 +160,6 @@ jobs:
       needs.unit_tests.outputs.unit_status == 'passed' &&
       needs.integration_tests.result == 'success'
 
-    outputs:
-      docker_tag: ${{ steps.export_tag.outputs.docker_tag }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -200,6 +197,11 @@ jobs:
           mkdir -p /tmp/docker-image
           docker save my-backend:${{ steps.export_tag.outputs.docker_tag }} -o /tmp/docker-image/backend-image.tar
 
+      - name: Save tag to artifact
+        run: |
+          mkdir -p /tmp/tag-info
+          echo "${{ steps.export_tag.outputs.docker_tag }}" > /tmp/tag-info/docker-tag.txt
+
       - name: Upload Docker image artifact
         uses: actions/upload-artifact@v4
         with:
@@ -207,12 +209,17 @@ jobs:
           path: /tmp/docker-image/backend-image.tar
           retention-days: 1
 
+      - name: Upload Docker tag artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-tag
+          path: /tmp/tag-info/docker-tag.txt
+          retention-days: 1
+
   docker_publish:
     runs-on: ubuntu-latest
     needs: docker_build
     if: needs.docker_build.result == 'success'
-    outputs:
-      docker_tag: ${{ needs.docker_build.outputs.docker_tag }}
 
     steps:
       - name: Download Docker image artifact
@@ -220,6 +227,12 @@ jobs:
         with:
           name: docker-image
           path: /tmp/docker-image
+
+      - name: Download Docker tag artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-tag
+          path: /tmp/tag-info
 
       - name: Load Docker image
         run: |
@@ -233,7 +246,7 @@ jobs:
 
       - name: Push Docker images
         run: |
-          TAG=${{ needs.docker_build.outputs.docker_tag }}
+          TAG=$(cat /tmp/tag-info/docker-tag.txt)
           DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
 
           docker tag my-backend:$TAG $DOCKER_USERNAME/my-backend:$TAG
