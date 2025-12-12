@@ -84,6 +84,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Copy database script to Azure VM
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "Data_base/db.sql"
+          target: "/home/azureuser/myapp/"
+
       - name: Deploy with Docker Compose
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -92,7 +104,13 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd /home/azureuser/myapp
-
+            echo "=== Inicializando base de datos ==="
+            if [ -f "Data_base/db.sql" ]; then
+              echo "✅ Script SQL encontrado: Data_base/db.sql"
+            else
+              echo "❌ Script SQL no encontrado"
+              exit 1
+            fi
             echo "=== Iniciando deployment ==="
             echo "Docker tag: ${{ needs.extract_tag.outputs.docker_tag }}"
             echo "Construyendo e iniciando contenedores..."
