@@ -33,6 +33,7 @@ app = FastAPI(lifespan=lifespan)
 
 # Configuración de CORS
 origins = [
+    "http://20.94.44.65:8000/" # server test
     "http://localhost:8000",  # Django development server
     "http://127.0.0.1:8000",  # Django development server (alternative)
     "http://localhost",
